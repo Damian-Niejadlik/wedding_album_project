@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ album.title }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.3.1/fabric.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h1>{{ album.title }}</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <div id="photo-gallery">
+                {% for photo in photos %}
+                <img src="{{ photo.image.url }}" draggable="true" ondragstart="drag(event)" id="photo{{ photo.id }}" width="200px">
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-8">
+            <canvas id="albumCanvas" width="600" height="400" ondrop="drop(event)" ondragover="allowDrop(event)"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    var canvas = new fabric.Canvas('albumCanvas');
+
+    function allowDrop(ev) {
+        ev.preventDefault();
+    }
+
+    function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+    }
+
+    function drop(ev) {
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("text");
+        var img = document.getElementById(data);
+        fabric.Image.fromURL(img.src, function(imgObj) {
+            canvas.add(imgObj);
+        });
+    }
+
+    // Możliwość dodawania tekstu
+    canvas.on('mouse:down', function(options) {
+        var text = new fabric.Textbox('Text', {
+            left: options.pointer.x,
+            top: options.pointer.y
+        });
+        canvas.add(text);
+    });
+</script>
+
+</body>
+</html>

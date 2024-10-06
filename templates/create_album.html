@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utwórz Nowy Album</title>
+
+    <!-- Załaduj tagi statyczne -->
+    {% load static %}
+
+    <link rel="stylesheet" href="{% static 'styles.css' %}"> <!-- Link do stylów CSS -->
+</head>
+<body>
+    <div class="container">
+        <h1>Utwórz Nowy Album</h1>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Utwórz Album</button>
+        </form>
+    </div>
+</body>
+</html>
