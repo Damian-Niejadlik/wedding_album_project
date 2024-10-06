@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Szczegóły Albumu</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>{{ album.title }}</h1>
+        <p>Utworzono: {{ album.created_at }}</p>
+
+        <h2>Zdjęcia w albumie:</h2>
+        <div class="photo-gallery">
+            {% for photo in photos %}
+                <div class="photo-item">
+                    <img src="{{ photo.image.url }}" alt="Photo" style="max-width: 200px; max-height: 200px;">
+                    <div class="photo-actions">
+                        <a href="{% url 'edit_photo' photo.id %}">Edytuj</a>
+                        <a href="{% url 'delete_photo' photo.id %}">Usuń</a>
+                    </div>
+                </div>
+            {% empty %}
+                <p>Brak zdjęć w tym albumie.</p>
+            {% endfor %}
+        </div>
+
+        <h2>Dodaj nowe zdjęcie:</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="image" accept="image/*" required>
+            <button type="submit">Dodaj zdjęcie</button>
+        </form>
+
+        <h2>Lub zrób zdjęcie kamerą:</h2>
+        <video id="video" width="320" height="240" autoplay></video>
+        <button id="capture">Zrób zdjęcie</button>
+        <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+
+        <form method="post" enctype="multipart/form-data" id="photoForm">
+            {% csrf_token %}
+            <input type="hidden" name="camera_photo" id="camera_photo">
+            <button type="submit" id="submit_camera_photo" style="display:none;">Zapisz zdjęcie</button>
+        </form>
+
+        <div class="export-buttons">
+            <a href="{% url 'export_album_pdf' album.id %}" class="btn">Eksportuj do PDF</a>
+            <a href="{% url 'export_album_docx' album.id %}" class="btn">Eksportuj do DOCX</a>
+            <a href="{% url 'export_album_html' album.id %}" class="btn">Eksportuj do HTML</a>
+        </div>
+
+        <div class="back-link">
+            <a href="{% url 'album_list' %}">Powrót do listy albumów</a>
+        </div>
+    </div>
+
+    <script>
+        // Start capturing video from webcam
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureButton = document.getElementById('capture');
+        const photoForm = document.getElementById('photoForm');
+        const cameraPhotoInput = document.getElementById('camera_photo');
+        const submitButton = document.getElementById('submit_camera_photo');
+
+        navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+            video.srcObject = stream;
+        });
+
+        captureButton.addEventListener('click', () => {
+            const context = canvas.getContext('2d');
+            canvas.style.display = 'block';
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/png');
+            cameraPhotoInput.value = imageData;
+            submitButton.style.display = 'block';
+        });
+    </script>
+</body>
+</html>

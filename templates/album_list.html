@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista Albumów</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Lista Albumów</h1>
+
+        <ul>
+            {% for album in albums %}
+                <li>
+                    <a href="{% url 'album_detail' album.id %}">{{ album.title }}</a>
+                    <form method="post" action="{% url 'delete_album' album.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit">Usuń</button>
+                    </form>
+                </li>
+            {% empty %}
+                <li>Brak albumów.</li>
+            {% endfor %}
+        </ul>
+
+        <a href="{% url 'create_album' %}">Utwórz nowy album</a>
+    </div>
+</body>
+</html>
