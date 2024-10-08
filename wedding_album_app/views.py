@@ -1,4 +1,8 @@
+import os
+
 from django.shortcuts import render, redirect, get_object_or_404
+
+from wedding_album_project import settings
 from .models import Album, Photo
 from .forms import AlbumForm, PhotoForm
 import base64
@@ -10,6 +14,7 @@ from reportlab.lib.pagesizes import letter
 import io
 from docx.shared import Inches
 from django.template.loader import render_to_string
+
 
 
 def album_list(request):
@@ -57,8 +62,21 @@ def delete_album(request, album_id):
     return redirect('album_list')
 
 
+# def edit_photo(request, photo_id):
+#     photo = get_object_or_404(Photo, id=photo_id)
+#     if request.method == 'POST':
+#         form = PhotoForm(request.POST, request.FILES, instance=photo)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('album_detail', album_id=photo.album.id)
+#     else:
+#         form = PhotoForm(instance=photo)
+#     return render(request, 'edit_photo.html', {'form': form})
+
+
 def edit_photo(request, photo_id):
     photo = get_object_or_404(Photo, id=photo_id)
+
     if request.method == 'POST':
         form = PhotoForm(request.POST, request.FILES, instance=photo)
         if form.is_valid():
@@ -66,7 +84,11 @@ def edit_photo(request, photo_id):
             return redirect('album_detail', album_id=photo.album.id)
     else:
         form = PhotoForm(instance=photo)
-    return render(request, 'edit_photo.html', {'form': form})
+
+    stickers = os.listdir(os.path.join(settings.MEDIA_ROOT, 'stickers'))
+
+    return render(request, 'edit_photo.html', {'form': form, 'photo': photo, 'stickers': stickers})
+
 
 
 def delete_photo(request, photo_id):
@@ -114,14 +136,27 @@ def export_album_docx(request, album_id):
     return response
 
 
+# def export_album_html(request, album_id):
+#     album = get_object_or_404(Album, id=album_id)
+#     photos = album.photos.all()
+#
+#     html_content = render_to_string('export_album.html', {'album': album, 'photos': photos})
+#
+#     response = HttpResponse(html_content, content_type='text/html')
+#     response['Content-Disposition'] = f'attachment; filename={album.title}.html'
+#     return response
+
 def export_album_html(request, album_id):
     album = get_object_or_404(Album, id=album_id)
     photos = album.photos.all()
 
-    html_content = render_to_string('export_album.html', {'album': album, 'photos': photos})
+    # Generowanie HTML przy użyciu szablonu
+    html_content = render_to_string('album_export.html', {'album': album, 'photos': photos})
 
-    response = HttpResponse(html_content, content_type='text/html')
-    response['Content-Disposition'] = f'attachment; filename={album.title}.html'
+    response = HttpResponse(content_type='text/html')
+    response['Content-Disposition'] = f'attachment; filename="{album.title}.html"'
+    response.write(html_content)
+
     return response
 
 
@@ -139,3 +174,36 @@ def add_photo(request, album_id):
         form = PhotoForm()
 
     return render(request, 'add_photo.html', {'form': form, 'album': album})
+
+
+
+def capture_photo(request, album_id):
+    album = get_object_or_404(Album, id=album_id)
+
+    if request.method == 'POST':
+        captured_image_data = request.POST.get('captured_image')
+        if captured_image_data:
+            # Dekodowanie obrazu z formatu base64
+            format, imgstr = captured_image_data.split(';base64,')
+            ext = format.split('/')[-1]
+            image_data = ContentFile(base64.b64decode(imgstr), name=f'captured_photo.{ext}')
+
+            # Zapisz zdjęcie w albumie
+            Photo.objects.create(album=album, image=image_data)
+            return redirect('album_detail', album_id=album_id)
+
+    return render(request, 'album_detail.html', {'album': album})
+
+
+def save_edited_photo(request, photo_id):
+    if request.method == 'POST':
+        photo = get_object_or_404(Photo, id=photo_id)
+        edited_image_data = request.POST.get('edited_image')
+
+        if edited_image_data:
+            # Usunięcie nagłówka 'data:image/png;base64,' z danych obrazu
+            format, imgstr = edited_image_data.split(';base64,')
+            ext = format.split('/')[-1]
+            photo.image.save(f'edited_{photo_id}.{ext}', ContentFile(base64.b64decode(imgstr)), save=True)
+
+        return redirect('album_detail', album_id=photo.album.id)
