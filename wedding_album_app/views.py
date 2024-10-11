@@ -198,12 +198,13 @@ def capture_photo(request, album_id):
 def save_edited_photo(request, photo_id):
     if request.method == 'POST':
         photo = get_object_or_404(Photo, id=photo_id)
-        edited_image_data = request.POST.get('edited_image')
+        edited_photo_data = request.POST.get('edited_photo_data')
 
-        if edited_image_data:
-            # Usunięcie nagłówka 'data:image/png;base64,' z danych obrazu
-            format, imgstr = edited_image_data.split(';base64,')
-            ext = format.split('/')[-1]
-            photo.image.save(f'edited_{photo_id}.{ext}', ContentFile(base64.b64decode(imgstr)), save=True)
+        # Usunięcie nagłówka "data:image/png;base64,"
+        format, imgstr = edited_photo_data.split(';base64,')
+        ext = format.split('/')[-1]
+        data = ContentFile(base64.b64decode(imgstr), name=f'{photo_id}-edited.{ext}')
 
+        # Zapis nowego zdjęcia
+        photo.image.save(data.name, data)
         return redirect('album_detail', album_id=photo.album.id)

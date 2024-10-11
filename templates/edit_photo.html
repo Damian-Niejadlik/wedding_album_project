@@ -1,764 +1,197 @@
-<!--<!DOCTYPE html>-->
-<!--<html lang="pl">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
-<!--    <title>Edytuj Zdjęcie</title>-->
-<!--    {% load static %}-->
-<!--    <link rel="stylesheet" href="{% static 'styles.css' %}">-->
-<!--</head>-->
-<!--<body>-->
-<!--    <div class="container">-->
-<!--        <h1>Edytuj Zdjęcie</h1>-->
-
-<!--        <form method="post" enctype="multipart/form-data">-->
-<!--            {% csrf_token %}-->
-<!--            {{ form.as_p }}-->
-<!--            <button type="submit">Zapisz zmiany</button>-->
-<!--        </form>-->
-
-<!--        <div class="back-link">-->
-<!--            <a href="{% url 'album_detail' form.instance.album.id %}">Powrót do albumu</a>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</body>-->
-<!--</html>-->
-
-
-<!-- ======================================================================================================= -->
-
-
-
-<!--<!DOCTYPE html>-->
-<!--<html lang="pl">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
-<!--    <title>Edytuj zdjęcie</title>-->
-<!--    <link rel="stylesheet" href="{% static 'styles.css' %}">-->
-<!--    <script>-->
-<!--        document.addEventListener('DOMContentLoaded', function () {-->
-<!--            const image = document.getElementById('photo-image');-->
-<!--            const canvas = document.getElementById('photo-canvas');-->
-<!--            const ctx = canvas.getContext('2d');-->
-<!--            const stickers = document.querySelectorAll('.sticker');-->
-<!--            const textButton = document.getElementById('add-text');-->
-
-<!--            // Rysowanie obrazu na płótnie-->
-<!--            const img = new Image();-->
-<!--            img.src = image.src;-->
-<!--            img.onload = function() {-->
-<!--                canvas.width = img.width;-->
-<!--                canvas.height = img.height;-->
-<!--                ctx.drawImage(img, 0, 0);-->
-<!--            };-->
-
-<!--            // Dodawanie naklejki-->
-<!--            stickers.forEach(sticker => {-->
-<!--                sticker.addEventListener('click', function () {-->
-<!--                    const stickerImg = new Image();-->
-<!--                    stickerImg.src = sticker.src;-->
-<!--                    stickerImg.onload = function() {-->
-<!--                        ctx.drawImage(stickerImg, 50, 50, 100, 100); // Pozycja i rozmiar naklejki-->
-<!--                    };-->
-<!--                });-->
-<!--            });-->
-
-<!--            // Dodawanie tekstu-->
-<!--            textButton.addEventListener('click', function () {-->
-<!--                const text = prompt('Wprowadź tekst:');-->
-<!--                if (text) {-->
-<!--                    ctx.font = '20px Arial';-->
-<!--                    ctx.fillStyle = 'black';-->
-<!--                    ctx.fillText(text, 50, 150); // Pozycja tekstu-->
-<!--                }-->
-<!--            });-->
-<!--        });-->
-<!--    </script>-->
-<!--</head>-->
-<!--<body>-->
-<!--    <h1>Edytuj zdjęcie</h1>-->
-
-<!--    <div class="edit-container">-->
-<!--        <img id="photo-image" src="{{ photo.image.url }}" alt="Photo" style="display:none;">-->
-<!--        <canvas id="photo-canvas"></canvas>-->
-
-<!--        <div class="edit-tools">-->
-<!--            <h3>Dodaj naklejki</h3>-->
-<!--            <div class="sticker-gallery">-->
-<!--                {% for sticker in stickers %}-->
-<!--                    <img class="sticker" src="{{ MEDIA_URL }}stickers/{{ sticker }}" alt="Sticker" style="width:50px;">-->
-<!--                {% endfor %}-->
-<!--            </div>-->
-<!--            <button id="add-text">Dodaj tekst</button>-->
-<!--        </div>-->
-<!--    </div>-->
-
-<!--    <form method="post" enctype="multipart/form-data">-->
-<!--        {% csrf_token %}-->
-<!--        {{ form.as_p }}-->
-<!--        <button type="submit">Zapisz zmiany</button>-->
-<!--    </form>-->
-
-<!--    <a href="{% url 'album_detail' photo.album.id %}">Powrót do albumu</a>-->
-<!--</body>-->
-<!--</html>-->
-
-
-
-
-
-
-
-<!--<!DOCTYPE html>-->
-<!--<html lang="pl">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
-<!--    <title>Edytuj zdjęcie</title>-->
-<!--    {% load static %}-->
-<!--    <link rel="stylesheet" href="{% static 'styles.css' %}">-->
-<!--</head>-->
-<!--<body>-->
-<!--    <div class="container">-->
-<!--        <h1>Edytuj zdjęcie</h1>-->
-
-<!--        <div class="photo-edit-container">-->
-<!--            <img id="photo" src="{{ photo.image.url }}" alt="Photo" style="max-width: 400px; max-height: 400px;">-->
-
-<!--            <div class="sticker-toolbox">-->
-<!--                <h3>Dodaj naklejki:</h3>-->
-<!--                {% for sticker in stickers %}-->
-<!--                    <img class="sticker" src="{{ sticker.url }}" alt="Sticker" style="width: 50px; height: 50px;">-->
-<!--                {% endfor %}-->
-<!--            </div>-->
-
-<!--            <h3>Dodaj tekst:</h3>-->
-<!--            <button id="add-text-btn">Dodaj pole tekstowe</button>-->
-<!--        </div>-->
-
-<!--        <div class="photo-actions">-->
-<!--            <a href="{% url 'album_detail' photo.album.id %}">Powrót do albumu</a>-->
-<!--        </div>-->
-<!--    </div>-->
-
-<!--    <script>-->
-<!--        const photo = document.getElementById('photo');-->
-<!--        const addTextBtn = document.getElementById('add-text-btn');-->
-
-<!--        // Dodawanie naklejek-->
-<!--        document.querySelectorAll('.sticker').forEach(sticker => {-->
-<!--            sticker.addEventListener('click', function() {-->
-<!--                const img = document.createElement('img');-->
-<!--                img.src = this.src;-->
-<!--                img.classList.add('draggable');-->
-<!--                img.style.position = 'absolute';-->
-<!--                img.style.top = '50px';-->
-<!--                img.style.left = '50px';-->
-<!--                document.body.appendChild(img);-->
-
-<!--                makeDraggable(img);-->
-<!--            });-->
-<!--        });-->
-
-<!--        // Dodawanie pola tekstowego-->
-<!--        addTextBtn.addEventListener('click', function() {-->
-<!--            const textBox = document.createElement('div');-->
-<!--            textBox.contentEditable = true;-->
-<!--            textBox.innerText = 'Wpisz tekst';-->
-<!--            textBox.classList.add('draggable');-->
-<!--            textBox.style.position = 'absolute';-->
-<!--            textBox.style.top = '100px';-->
-<!--            textBox.style.left = '100px';-->
-<!--            textBox.style.backgroundColor = 'white';-->
-<!--            textBox.style.padding = '5px';-->
-<!--            document.body.appendChild(textBox);-->
-
-<!--            makeDraggable(textBox);-->
-<!--        });-->
-
-<!--        // Funkcja umożliwiająca przeciąganie elementów-->
-<!--        function makeDraggable(element) {-->
-<!--            element.addEventListener('mousedown', function(e) {-->
-<!--                const shiftX = e.clientX - element.getBoundingClientRect().left;-->
-<!--                const shiftY = e.clientY - element.getBoundingClientRect().top;-->
-
-<!--                function moveAt(pageX, pageY) {-->
-<!--                    element.style.left = pageX - shiftX + 'px';-->
-<!--                    element.style.top = pageY - shiftY + 'px';-->
-<!--                }-->
-
-<!--                function onMouseMove(event) {-->
-<!--                    moveAt(event.pageX, event.pageY);-->
-<!--                }-->
-
-<!--                document.addEventListener('mousemove', onMouseMove);-->
-
-<!--                element.addEventListener('mouseup', function() {-->
-<!--                    document.removeEventListener('mousemove', onMouseMove);-->
-<!--                    element.onmouseup = null;-->
-<!--                });-->
-<!--            });-->
-<!--        }-->
-<!--    </script>-->
-<!--</body>-->
-<!--</html>-->
-
-
-
-
-
-<!--<!DOCTYPE html>-->
-<!--<html lang="pl">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
-<!--    <title>Edytuj zdjęcie</title>-->
-<!--    <link rel="stylesheet" href="{% static 'css/style.css' %}">-->
-<!--    <style>-->
-<!--        #canvas {-->
-<!--            border: 1px solid black;-->
-<!--        }-->
-<!--        .sticker {-->
-<!--            cursor: pointer;-->
-<!--            width: 50px;-->
-<!--        }-->
-<!--        .draggable {-->
-<!--            position: absolute;-->
-<!--            cursor: move;-->
-<!--        }-->
-<!--    </style>-->
-<!--</head>-->
-<!--<body>-->
-<!--    <h1>Edytuj zdjęcie</h1>-->
-
-<!--    <div id="edit-container">-->
-<!--        <canvas id="canvas"></canvas>-->
-<!--        <div>-->
-<!--            <h2>Dodaj naklejki:</h2>-->
-<!--            <div id="sticker-container">-->
-<!--                {% for sticker in stickers %}-->
-<!--                    <img src="{{ sticker.url }}" class="sticker" alt="Naklejka">-->
-<!--                {% endfor %}-->
-<!--            </div>-->
-<!--            <button id="add-text">Dodaj tekst</button>-->
-<!--        </div>-->
-<!--    </div>-->
-
-<!--    <form method="post" enctype="multipart/form-data" action="{% url 'save_edited_photo' photo.id %}">-->
-<!--        {% csrf_token %}-->
-<!--        <input type="hidden" name="edited_image" id="edited-image">-->
-<!--        <button type="submit">Zapisz zdjęcie</button>-->
-<!--    </form>-->
-
-<!--    <script>-->
-<!--        const canvas = document.getElementById('canvas');-->
-<!--        const context = canvas.getContext('2d');-->
-<!--        const stickers = document.querySelectorAll('.sticker');-->
-<!--        const addTextBtn = document.getElementById('add-text');-->
-<!--        const editedImageInput = document.getElementById('edited-image');-->
-
-<!--        let img = new Image();-->
-<!--        img.src = "{{ photo.image.url }}";-->
-<!--        img.onload = function() {-->
-<!--            canvas.width = img.width;-->
-<!--            canvas.height = img.height;-->
-<!--            context.drawImage(img, 0, 0);-->
-<!--        };-->
-
-<!--        stickers.forEach(sticker => {-->
-<!--            sticker.addEventListener('click', function() {-->
-<!--                const stickerImg = new Image();-->
-<!--                stickerImg.src = sticker.src;-->
-<!--                stickerImg.onload = function() {-->
-<!--                    context.drawImage(stickerImg, 50, 50, 100, 100); // Dodaj naklejkę w domyślnym miejscu-->
-<!--                };-->
-<!--            });-->
-<!--        });-->
-
-<!--        addTextBtn.addEventListener('click', function() {-->
-<!--            const text = prompt("Wprowadź tekst:");-->
-<!--            if (text) {-->
-<!--                context.font = "20px Arial";-->
-<!--                context.fillText(text, 50, 50); // Domyślna pozycja tekstu-->
-<!--            }-->
-<!--        });-->
-
-<!--        document.querySelector('form').addEventListener('submit', function() {-->
-<!--            const dataUrl = canvas.toDataURL('image/png');-->
-<!--            editedImageInput.value = dataUrl; // Przekazanie zmodyfikowanego obrazu do serwera-->
-<!--        });-->
-<!--    </script>-->
-<!--</body>-->
-<!--</html>-->
-
-
-
-
-
-
-<!--<!DOCTYPE html>-->
-<!--<html lang="pl">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
-<!--    <title>Edytuj zdjęcie</title>-->
-<!--    <style>-->
-<!--        /* Styl dla zdjęcia i elementów przeciągalnych */-->
-<!--        #photo-container {-->
-<!--            position: relative;-->
-<!--            display: inline-block;-->
-<!--        }-->
-
-<!--        #editable-photo {-->
-<!--            max-width: 400px;-->
-<!--            max-height: 400px;-->
-<!--        }-->
-
-<!--        .draggable {-->
-<!--            position: absolute;-->
-<!--            cursor: move;-->
-<!--        }-->
-
-<!--        .sticker {-->
-<!--            width: 50px;-->
-<!--            height: 50px;-->
-<!--        }-->
-
-<!--        #stickers-container {-->
-<!--            display: flex;-->
-<!--            flex-direction: column;-->
-<!--        }-->
-<!--    </style>-->
-<!--</head>-->
-<!--<body>-->
-<!--    <h1>Edytuj zdjęcie</h1>-->
-
-<!--    &lt;!&ndash; Kontener na zdjęcie &ndash;&gt;-->
-<!--    <div id="photo-container">-->
-<!--        <img id="editable-photo" src="{{ photo.image.url }}" alt="Zdjęcie do edycji">-->
-<!--    </div>-->
-
-<!--    <h3>Dodaj naklejki:</h3>-->
-<!--    <div id="stickers-container">-->
-<!--        &lt;!&ndash; Naklejki do przeciągnięcia &ndash;&gt;-->
-<!--        {% for sticker in stickers %}-->
-<!--            <img src="{{ sticker.url }}" class="sticker draggable" draggable="true" id="sticker-{{ forloop.counter }}" alt="Naklejka">-->
-<!--        {% endfor %}-->
-<!--        <button id="add-text-btn">Dodaj tekst</button>-->
-<!--    </div>-->
-
-<!--    <form method="post" enctype="multipart/form-data" action="{% url 'save_edited_photo' photo.id %}">-->
-<!--        {% csrf_token %}-->
-<!--        <input type="hidden" name="edited_image" id="edited-image">-->
-<!--        <button type="submit">Zapisz zdjęcie</button>-->
-<!--    </form>-->
-
-<!--    <script>-->
-<!--        // Funkcja do przeciągania elementów-->
-<!--        function makeDraggable(el) {-->
-<!--            let posX = 0, posY = 0, initX = 0, initY = 0;-->
-<!--            el.onmousedown = dragMouseDown;-->
-
-<!--            function dragMouseDown(e) {-->
-<!--                e.preventDefault();-->
-<!--                initX = e.clientX;-->
-<!--                initY = e.clientY;-->
-<!--                document.onmouseup = stopDragging;-->
-<!--                document.onmousemove = elementDrag;-->
-<!--            }-->
-
-<!--            function elementDrag(e) {-->
-<!--                e.preventDefault();-->
-<!--                posX = initX - e.clientX;-->
-<!--                posY = initY - e.clientY;-->
-<!--                initX = e.clientX;-->
-<!--                initY = e.clientY;-->
-<!--                el.style.top = (el.offsetTop - posY) + "px";-->
-<!--                el.style.left = (el.offsetLeft - posX) + "px";-->
-<!--            }-->
-
-<!--            function stopDragging() {-->
-<!--                document.onmouseup = null;-->
-<!--                document.onmousemove = null;-->
-<!--            }-->
-<!--        }-->
-
-<!--        // Dodaj przeciąganie do wszystkich naklejek-->
-<!--        document.querySelectorAll('.draggable').forEach(function(sticker) {-->
-<!--            makeDraggable(sticker);-->
-<!--        });-->
-
-<!--        // Dodaj nowe pole tekstowe-->
-<!--        document.getElementById('add-text-btn').addEventListener('click', function() {-->
-<!--            const textElement = document.createElement('div');-->
-<!--            textElement.contentEditable = true;-->
-<!--            textElement.innerText = 'Wpisz tekst';-->
-<!--            textElement.classList.add('draggable');-->
-<!--            textElement.style.border = '1px dashed #000';-->
-<!--            textElement.style.padding = '5px';-->
-<!--            textElement.style.top = '10px';-->
-<!--            textElement.style.left = '10px';-->
-<!--            textElement.style.position = 'absolute';-->
-<!--            document.getElementById('photo-container').appendChild(textElement);-->
-<!--            makeDraggable(textElement);-->
-<!--        });-->
-
-<!--        // Zapis edytowanego zdjęcia-->
-<!--        document.querySelector('form').addEventListener('submit', function(event) {-->
-<!--            const canvas = document.createElement('canvas');-->
-<!--            const context = canvas.getContext('2d');-->
-<!--            const image = document.getElementById('editable-photo');-->
-<!--            const stickers = document.querySelectorAll('.draggable');-->
-
-<!--            // Ustawienie wymiarów canvas-->
-<!--            canvas.width = image.width;-->
-<!--            canvas.height = image.height;-->
-
-<!--            // Rysowanie zdjęcia na canvasie-->
-<!--            context.drawImage(image, 0, 0, canvas.width, canvas.height);-->
-
-<!--            // Dodawanie naklejek i tekstu na zdjęcie-->
-<!--            stickers.forEach(function(sticker) {-->
-<!--                if (sticker.tagName === 'IMG') {-->
-<!--                    context.drawImage(sticker, sticker.offsetLeft, sticker.offsetTop, sticker.width, sticker.height);-->
-<!--                } else if (sticker.contentEditable === "true") {-->
-<!--                    context.font = "20px Arial";-->
-<!--                    context.fillStyle = "black";-->
-<!--                    context.fillText(sticker.innerText, sticker.offsetLeft, sticker.offsetTop + 20);-->
-<!--                }-->
-<!--            });-->
-
-<!--            // Konwersja do base64-->
-<!--            const dataUrl = canvas.toDataURL('image/png');-->
-<!--            document.getElementById('edited-image').value = dataUrl;-->
-<!--        });-->
-<!--    </script>-->
-<!--</body>-->
-<!--</html>-->
-
-
-
-
-
-
-
-<!--<!DOCTYPE html>-->
-<!--<html lang="pl">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
-<!--    <title>Edytuj zdjęcie</title>-->
-<!--    <style>-->
-<!--        /* Styl dla zdjęcia i elementów przeciągalnych */-->
-<!--        #photo-container {-->
-<!--            position: relative;-->
-<!--            display: inline-block;-->
-<!--        }-->
-
-<!--        #editable-photo {-->
-<!--            max-width: 400px;-->
-<!--            max-height: 400px;-->
-<!--        }-->
-
-<!--        .draggable {-->
-<!--            position: absolute;-->
-<!--            cursor: move;-->
-<!--        }-->
-
-<!--        .sticker {-->
-<!--            width: 50px;-->
-<!--            height: 50px;-->
-<!--            cursor: move;-->
-<!--        }-->
-
-<!--        #stickers-container {-->
-<!--            display: flex;-->
-<!--            flex-direction: column;-->
-<!--        }-->
-
-<!--        /* Styl dla pola tekstowego */-->
-<!--        .text-box {-->
-<!--            border: 1px dashed #000;-->
-<!--            padding: 5px;-->
-<!--            background-color: rgba(255, 255, 255, 0.5);-->
-<!--            resize: both;-->
-<!--            overflow: auto;-->
-<!--        }-->
-<!--    </style>-->
-<!--</head>-->
-<!--<body>-->
-<!--    <h1>Edytuj zdjęcie</h1>-->
-
-<!--    &lt;!&ndash; Kontener na zdjęcie &ndash;&gt;-->
-<!--    <div id="photo-container">-->
-<!--        <img id="editable-photo" src="{{ photo.image.url }}" alt="Zdjęcie do edycji">-->
-<!--    </div>-->
-
-<!--    <h3>Dodaj naklejki:</h3>-->
-<!--    <div id="stickers-container">-->
-<!--        &lt;!&ndash; Naklejki do przeciągnięcia &ndash;&gt;-->
-<!--        {% for sticker in stickers %}-->
-<!--            <img src="{{ sticker.url }}" class="sticker draggable" draggable="true" id="sticker-{{ forloop.counter }}" alt="Naklejka">-->
-<!--        {% endfor %}-->
-<!--        <button id="add-text-btn">Dodaj tekst</button>-->
-<!--    </div>-->
-
-<!--    <form method="post" enctype="multipart/form-data" action="{% url 'save_edited_photo' photo.id %}">-->
-<!--        {% csrf_token %}-->
-<!--        <input type="hidden" name="edited_image" id="edited-image">-->
-<!--        <button type="submit">Zapisz zdjęcie</button>-->
-<!--    </form>-->
-
-<!--    <script>-->
-<!--        // Funkcja do przeciągania elementów-->
-<!--        function makeDraggable(el) {-->
-<!--            let posX = 0, posY = 0, initX = 0, initY = 0;-->
-<!--            el.onmousedown = dragMouseDown;-->
-
-<!--            function dragMouseDown(e) {-->
-<!--                e.preventDefault();-->
-<!--                initX = e.clientX;-->
-<!--                initY = e.clientY;-->
-<!--                document.onmouseup = stopDragging;-->
-<!--                document.onmousemove = elementDrag;-->
-<!--            }-->
-
-<!--            function elementDrag(e) {-->
-<!--                e.preventDefault();-->
-<!--                posX = initX - e.clientX;-->
-<!--                posY = initY - e.clientY;-->
-<!--                initX = e.clientX;-->
-<!--                initY = e.clientY;-->
-<!--                el.style.top = (el.offsetTop - posY) + "px";-->
-<!--                el.style.left = (el.offsetLeft - posX) + "px";-->
-<!--            }-->
-
-<!--            function stopDragging() {-->
-<!--                document.onmouseup = null;-->
-<!--                document.onmousemove = null;-->
-<!--            }-->
-<!--        }-->
-
-<!--        // Dodaj przeciąganie do wszystkich naklejek-->
-<!--        document.querySelectorAll('.draggable').forEach(function(sticker) {-->
-<!--            makeDraggable(sticker);-->
-<!--        });-->
-
-<!--        // Dodaj nowe pole tekstowe-->
-<!--        document.getElementById('add-text-btn').addEventListener('click', function() {-->
-<!--            const textElement = document.createElement('div');-->
-<!--            textElement.contentEditable = true;-->
-<!--            textElement.classList.add('draggable', 'text-box');-->
-<!--            textElement.innerText = 'Wpisz tekst';-->
-<!--            textElement.style.top = '10px';-->
-<!--            textElement.style.left = '10px';-->
-<!--            document.getElementById('photo-container').appendChild(textElement);-->
-<!--            makeDraggable(textElement);-->
-<!--        });-->
-
-<!--        // Zapis edytowanego zdjęcia-->
-<!--        document.querySelector('form').addEventListener('submit', function(event) {-->
-<!--            const canvas = document.createElement('canvas');-->
-<!--            const context = canvas.getContext('2d');-->
-<!--            const image = document.getElementById('editable-photo');-->
-<!--            const stickers = document.querySelectorAll('.draggable');-->
-
-<!--            // Ustawienie wymiarów canvas-->
-<!--            canvas.width = image.width;-->
-<!--            canvas.height = image.height;-->
-
-<!--            // Rysowanie zdjęcia na canvasie-->
-<!--            context.drawImage(image, 0, 0, canvas.width, canvas.height);-->
-
-<!--            // Dodawanie naklejek i tekstu na zdjęcie-->
-<!--            stickers.forEach(function(sticker) {-->
-<!--                if (sticker.tagName === 'IMG') {-->
-<!--                    context.drawImage(sticker, sticker.offsetLeft, sticker.offsetTop, sticker.width, sticker.height);-->
-<!--                } else if (sticker.contentEditable === "true") {-->
-<!--                    context.font = "20px Arial";-->
-<!--                    context.fillStyle = "black";-->
-<!--                    context.fillText(sticker.innerText, sticker.offsetLeft, sticker.offsetTop + 20);-->
-<!--                }-->
-<!--            });-->
-
-<!--            // Konwersja do base64-->
-<!--            const dataUrl = canvas.toDataURL('image/png');-->
-<!--            document.getElementById('edited-image').value = dataUrl;-->
-<!--        });-->
-<!--    </script>-->
-<!--</body>-->
-<!--</html>-->
-
-
-
-
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edytuj zdjęcie</title>
+    <title>Edit Photo</title>
     <style>
-        /* Styl dla zdjęcia i elementów przeciągalnych */
-        #photo-container {
+        .canvas-container {
             position: relative;
             display: inline-block;
         }
 
-        #editable-photo {
-            max-width: 400px;
-            max-height: 400px;
+        canvas {
+            border: 1px solid #ccc;
+            cursor: pointer;
         }
 
-        .draggable {
-            position: absolute;
-            cursor: move;
+        .sticker-btn {
+            border: none;
+            background: none;
+            cursor: pointer;
         }
 
-        .sticker {
-            width: 50px;
-            height: 50px;
-            cursor: move;
+        #save-btn {
+            margin-top: 20px;
         }
 
-        #stickers-container {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 10px;
-        }
-
-        /* Styl dla pola tekstowego */
-        .text-box {
-            border: 1px dashed #000;
-            padding: 5px;
-            background-color: rgba(255, 255, 255, 0.7);
+        .text-input {
+            width: 100px;
             resize: both;
-            overflow: hidden;
-            min-width: 100px;
-            min-height: 30px;
-        }
-
-        /* Styl dla edytowalnych elementów */
-        .editable {
-            font-size: 16px;
-            border: 1px dashed #ccc;
-            padding: 3px;
-            background: white;
-            display: inline-block;
-            min-width: 50px;
+            overflow: auto;
+            display: block;
+            padding: 5px;
+            border: 1px solid #ccc;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <h1>Edytuj zdjęcie</h1>
 
-    <!-- Kontener na zdjęcie -->
-    <div id="photo-container">
-        <img id="editable-photo" src="{{ photo.image.url }}" alt="Zdjęcie do edycji">
-    </div>
-
-    <h3>Dodaj naklejki:</h3>
-    <div id="stickers-container">
-        <!-- Naklejki do przeciągnięcia -->
+    <div class="controls">
+        <!-- Przyciski dodawania naklejek -->
+        <h3>Dodaj naklejki:</h3>
         {% for sticker in stickers %}
-            <img src="{{ sticker.url }}" class="sticker draggable" draggable="true" id="sticker-{{ forloop.counter }}" alt="Naklejka">
+            <button class="sticker-btn" onclick="addSticker('{{ sticker.image.url }}')">
+                <img src="{{ sticker.image.url }}" alt="Naklejka" width="50" height="50">
+            </button>
         {% endfor %}
-        <button id="add-text-btn">Dodaj tekst</button>
     </div>
 
+    <div class="controls">
+        <!-- Przycisk dodawania tekstu -->
+        <input type="text" id="text-to-add" class="text-input" placeholder="Wpisz tekst">
+        <button onclick="addText()">Dodaj tekst</button>
+    </div>
+
+    <!-- Kontener dla canvas -->
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <!-- Przycisk zapisywania zdjęcia -->
     <form method="post" enctype="multipart/form-data" action="{% url 'save_edited_photo' photo.id %}">
         {% csrf_token %}
-        <input type="hidden" name="edited_image" id="edited-image">
-        <button type="submit">Zapisz zdjęcie</button>
+        <input type="hidden" id="edited-photo-data" name="edited_photo_data">
+        <button type="submit" id="save-btn">Zapisz zdjęcie</button>
     </form>
 
     <script>
-        // Funkcja do przeciągania elementów
-        function makeDraggable(el) {
-            let posX = 0, posY = 0, initX = 0, initY = 0;
-            el.onmousedown = dragMouseDown;
+        let canvas = document.getElementById('canvas');
+        let context = canvas.getContext('2d');
+        let draggedElement = null;
+        let photo = new Image();
+        let elements = [];
 
-            function dragMouseDown(e) {
-                e.preventDefault();
-                initX = e.clientX;
-                initY = e.clientY;
-                document.onmouseup = stopDragging;
-                document.onmousemove = elementDrag;
-            }
+        // Ustawienie zdjęcia w tle canvas
+        photo.src = "{{ photo.image.url }}";
+        photo.onload = function() {
+            canvas.width = photo.width;
+            canvas.height = photo.height;
+            context.drawImage(photo, 0, 0);
+        };
 
-            function elementDrag(e) {
-                e.preventDefault();
-                posX = initX - e.clientX;
-                posY = initY - e.clientY;
-                initX = e.clientX;
-                initY = e.clientY;
-                el.style.top = (el.offsetTop - posY) + "px";
-                el.style.left = (el.offsetLeft - posX) + "px";
-            }
+        // Funkcja dodająca naklejkę do canvas
+        function addSticker(stickerUrl) {
+            const sticker = new Image();
+            sticker.src = stickerUrl;
+            sticker.onload = function() {
+                elements.push({
+                    type: 'sticker',
+                    image: sticker,
+                    x: 10,
+                    y: 10,
+                    width: sticker.width / 2,
+                    height: sticker.height / 2
+                });
+                redrawCanvas();
+            };
+        }
 
-            function stopDragging() {
-                document.onmouseup = null;
-                document.onmousemove = null;
+        // Funkcja dodająca tekst do canvas
+        function addText() {
+            const text = document.getElementById('text-to-add').value;
+            if (text.trim() !== '') {
+                elements.push({
+                    type: 'text',
+                    text: text,
+                    x: 10,
+                    y: 50,
+                    fontSize: 20,
+                    color: 'black'
+                });
+                redrawCanvas();
             }
         }
 
-        // Dodaj przeciąganie do wszystkich naklejek
-        document.querySelectorAll('.draggable').forEach(function(sticker) {
-            makeDraggable(sticker);
+        // Przerysowanie całego canvas
+        function redrawCanvas() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(photo, 0, 0);
+
+            elements.forEach((element) => {
+                if (element.type === 'sticker') {
+                    context.drawImage(element.image, element.x, element.y, element.width, element.height);
+                } else if (element.type === 'text') {
+                    context.font = `${element.fontSize}px Arial`;
+                    context.fillStyle = element.color;
+                    context.fillText(element.text, element.x, element.y);
+                }
+            });
+        }
+
+        // Zdarzenia przeciągania
+        canvas.addEventListener('mousedown', function(e) {
+            const mouseX = e.offsetX;
+            const mouseY = e.offsetY;
+
+            draggedElement = elements.find((element) => {
+                if (element.type === 'sticker') {
+                    return mouseX > element.x && mouseX < element.x + element.width &&
+                           mouseY > element.y && mouseY < element.y + element.height;
+                } else if (element.type === 'text') {
+                    return mouseX > element.x && mouseX < element.x + context.measureText(element.text).width &&
+                           mouseY > element.y - element.fontSize && mouseY < element.y;
+                }
+                return false;
+            });
         });
 
-        // Dodaj nowe pole tekstowe
-        document.getElementById('add-text-btn').addEventListener('click', function() {
-            const textElement = document.createElement('div');
-            textElement.contentEditable = true;
-            textElement.classList.add('draggable', 'editable', 'text-box');
-            textElement.innerText = 'Wpisz tekst';
-            textElement.style.top = '10px';
-            textElement.style.left = '10px';
-            textElement.style.minWidth = '100px';
-            textElement.style.minHeight = '30px';
-            document.getElementById('photo-container').appendChild(textElement);
-            makeDraggable(textElement);
+        canvas.addEventListener('mousemove', function(e) {
+            if (draggedElement) {
+                const mouseX = e.offsetX;
+                const mouseY = e.offsetY;
+
+                draggedElement.x = mouseX;
+                draggedElement.y = mouseY;
+
+                redrawCanvas();
+            }
         });
 
-        // Zapis edytowanego zdjęcia
+        canvas.addEventListener('mouseup', function() {
+            draggedElement = null;
+        });
+
+        // Zapis zdjęcia z naklejkami i tekstem
         document.querySelector('form').addEventListener('submit', function(event) {
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            const image = document.getElementById('editable-photo');
-            const stickers = document.querySelectorAll('.draggable');
+            event.preventDefault();
 
-            // Ustawienie wymiarów canvas
-            canvas.width = image.naturalWidth;
-            canvas.height = image.naturalHeight;
+            const editedPhotoData = document.getElementById('edited-photo-data');
 
-            // Rysowanie zdjęcia na canvasie
-            context.drawImage(image, 0, 0, canvas.width, canvas.height);
+            // Rysowanie zdjęcia na canvas
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(photo, 0, 0);
 
-            // Dodawanie naklejek i tekstu na zdjęcie
-            stickers.forEach(function(sticker) {
-                if (sticker.tagName === 'IMG') {
-                    // Przekształcamy współrzędne do wielkości oryginalnego obrazu
-                    const ratioX = canvas.width / image.width;
-                    const ratioY = canvas.height / image.height;
-                    context.drawImage(sticker, sticker.offsetLeft * ratioX, sticker.offsetTop * ratioY, sticker.width * ratioX, sticker.height * ratioY);
-                } else if (sticker.contentEditable === "true") {
-                    context.font = "20px Arial";
-                    context.fillStyle = "black";
-                    // Przekształcamy pozycję tekstu do wielkości oryginalnego obrazu
-                    const ratioX = canvas.width / image.width;
-                    const ratioY = canvas.height / image.height;
-                    context.fillText(sticker.innerText, sticker.offsetLeft * ratioX, sticker.offsetTop * ratioY + 20);
+            // Rysowanie elementów (naklejki, tekst) na canvas
+            elements.forEach((element) => {
+                if (element.type === 'sticker') {
+                    context.drawImage(element.image, element.x, element.y, element.width, element.height);
+                } else if (element.type === 'text') {
+                    context.font = `${element.fontSize}px Arial`;
+                    context.fillStyle = element.color;
+                    context.fillText(element.text, element.x, element.y);
                 }
             });
 
-            // Konwersja do base64
-            const dataUrl = canvas.toDataURL('image/png');
-            document.getElementById('edited-image').value = dataUrl;
+            // Ustawienie wygenerowanego zdjęcia do ukrytego inputa
+            editedPhotoData.value = canvas.toDataURL('image/png');
+
+            // Wysłanie formularza
+            event.target.submit();
         });
     </script>
 </body>
 </html>
-
 
