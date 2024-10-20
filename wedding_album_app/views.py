@@ -74,20 +74,31 @@ def delete_album(request, album_id):
 #     return render(request, 'edit_photo.html', {'form': form})
 
 
+# def edit_photo(request, photo_id):
+#     photo = get_object_or_404(Photo, id=photo_id)
+#
+#     if request.method == 'POST':
+#         form = PhotoForm(request.POST, request.FILES, instance=photo)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('album_detail', album_id=photo.album.id)
+#     else:
+#         form = PhotoForm(instance=photo)
+#
+#     stickers = os.listdir(os.path.join(settings.MEDIA_ROOT, 'stickers'))
+#
+#     return render(request, 'edit_photo.html', {'form': form, 'photo': photo, 'stickers': stickers})
+
+
+
 def edit_photo(request, photo_id):
     photo = get_object_or_404(Photo, id=photo_id)
 
-    if request.method == 'POST':
-        form = PhotoForm(request.POST, request.FILES, instance=photo)
-        if form.is_valid():
-            form.save()
-            return redirect('album_detail', album_id=photo.album.id)
-    else:
-        form = PhotoForm(instance=photo)
+    # Pobieranie wszystkich plików PNG z folderu stickers
+    stickers_path = os.path.join(settings.MEDIA_ROOT, 'stickers')
+    stickers = [{'image': os.path.join(stickers_path, file)} for file in os.listdir(stickers_path) if file.endswith('.png')]
 
-    stickers = os.listdir(os.path.join(settings.MEDIA_ROOT, 'stickers'))
-
-    return render(request, 'edit_photo.html', {'form': form, 'photo': photo, 'stickers': stickers})
+    return render(request, 'edit_photo.html', {'photo': photo, 'stickers': stickers})
 
 
 

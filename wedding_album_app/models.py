@@ -16,3 +16,11 @@ class Photo(models.Model):
 
     def __str__(self):
         return f"Zdjęcie w albumie {self.album.title}"
+
+
+class Sticker(models.Model):
+    image = models.ForeignKey(Photo, related_name='stickers', on_delete=models.CASCADE)
+    sticker = models.ImageField()
+
+    def __str__(self):
+        return f"Nakleja {self.image.title}"
