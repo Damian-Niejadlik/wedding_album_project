@@ -48,4 +48,3 @@ urlpatterns = [
     path('album/<int:album_id>/export/html/', views.export_album_html, name='export_album_html'),
     path('photo/<int:photo_id>/edit/save/', views.save_edited_photo, name='save_edited_photo'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
