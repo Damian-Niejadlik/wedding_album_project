@@ -116,8 +116,9 @@ def export_album_docx(request, album_id):
 def export_album_html(request, album_id):
     album = get_object_or_404(Album, id=album_id)
     photos = album.photos.all()
+    full_path = settings.MEDIA_ROOT
 
-    html_content = render_to_string('album_export.html', {'album': album, 'photos': photos})
+    html_content = render_to_string('album_export.html', {'album': album, 'photos': photos, "full_path": full_path})
 
     response = HttpResponse(content_type='text/html')
     response['Content-Disposition'] = f'attachment; filename="{album.title}.html"'

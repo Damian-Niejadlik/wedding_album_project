@@ -1,3 +1,4 @@
+{% load filters %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,10 +8,11 @@
 </head>
 <body>
     <h1>{{ album.title }}</h1>
+    <h1> {{ full_path }} </h1>
     <div>
         {% for photo in photos %}
         <div>
-            <img src="C:/Users/Damian/Desktop/test/wedding_album_project{{ photo.image.url }}" width="300px"><br> #
+            <img src="{{ full_path|replace_slash }}/{{ photo.image.url|cut:'/media/' }}" width="300px"><br>
         </div>
         {% endfor %}
     </div>
