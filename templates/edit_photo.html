@@ -6,6 +6,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edytuj zdjęcie</title>
+
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+
     <style>
         .controls {
             margin-bottom: 20px;
@@ -35,7 +38,6 @@
 <body>
     <h1>Edytuj zdjęcie</h1>
 
-    <!-- Sekcja dodawania naklejek -->
     <div class="controls">
         <h3>Dodaj naklejki:</h3>
         {% for sticker in stickers %}
@@ -45,18 +47,15 @@
         {% endfor %}
     </div>
 
-    <!-- Sekcja dodawania tekstu -->
     <div class="controls">
         <input type="text" id="text-to-add" class="text-input" placeholder="Wpisz tekst">
         <button onclick="addText()">Dodaj tekst</button>
     </div>
 
-    <!-- Canvas do edycji zdjęcia -->
     <div class="canvas-container">
         <canvas id="canvas"></canvas>
     </div>
 
-    <!-- Przycisk zapisywania zdjęcia -->
     <form method="post" enctype="multipart/form-data" action="{% url 'save_edited_photo' photo.id %}">
         {% csrf_token %}
         <input type="hidden" id="edited-photo-data" name="edited_photo_data">
@@ -70,7 +69,6 @@
         let photo = new Image();
         let elements = [];
 
-        // Ustawienie zdjęcia w tle canvas
         photo.src = "{{ photo.image.url }}";
         photo.onload = function() {
             canvas.width = photo.width;
@@ -78,21 +76,19 @@
             context.drawImage(photo, 0, 0);
         };
 
-        // Funkcja dodająca naklejkę do canvas
         function addSticker(stickerUrl) {
-            console.log("Sticker URL przekazane do funkcji:", stickerUrl);  // Logowanie przed manipulacją ścieżki
+            console.log("Sticker URL przekazane do funkcji:", stickerUrl);
 
             if (!stickerUrl) {
-                console.error("Sticker URL jest pusty!");  // Sprawdzamy, czy URL jest pusty
+                console.error("Sticker URL jest pusty!");
                 return;
             }
 
-            // Sprawdzenie, czy ścieżka zaczyna się od "/media/"
+
             if (!stickerUrl.startsWith("/media/")) {
                 stickerUrl = "/media/" + stickerUrl;
             }
 
-            // Sprawdzenie i poprawienie, czy po słowie "stickers" jest ukośnik "/"
             const regex = /\/stickers(?!\/)/;
             stickerUrl = stickerUrl.replace(regex, '/stickers/');
 
@@ -120,7 +116,6 @@
 
 
 
-        // Funkcja dodająca tekst do canvas
         function addText() {
             const text = document.getElementById('text-to-add').value;
             if (text.trim() !== '') {
@@ -136,7 +131,6 @@
             }
         }
 
-        // Przerysowanie całego canvas
         function redrawCanvas() {
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.drawImage(photo, 0, 0);
@@ -152,7 +146,6 @@
             });
         }
 
-        // Zdarzenia przeciągania
         canvas.addEventListener('mousedown', function(e) {
             const mouseX = e.offsetX;
             const mouseY = e.offsetY;
@@ -190,17 +183,17 @@
             draggedElement = null;
         });
 
-        // Zapis zdjęcia z naklejkami i tekstem
+
         document.querySelector('form').addEventListener('submit', function(event) {
             event.preventDefault();
 
             const editedPhotoData = document.getElementById('edited-photo-data');
 
-            // Rysowanie zdjęcia na canvas
+
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.drawImage(photo, 0, 0);
 
-            // Rysowanie elementów (naklejki, tekst) na canvas
+
             elements.forEach((element) => {
                 if (element.type === 'sticker') {
                     context.drawImage(element.image, element.x, element.y, element.width, element.height);
@@ -211,10 +204,10 @@
                 }
             });
 
-            // Ustawienie wygenerowanego zdjęcia do ukrytego inputa
+
             editedPhotoData.value = canvas.toDataURL('image/png');
 
-            // Wysłanie formularza
+
             event.target.submit();
         });
     </script>

@@ -1,8 +1,12 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+
     <title>Szczegóły albumu</title>
 
     <style>
@@ -31,7 +35,7 @@
             <div class="photo-item">
                 <img src="{{ photo.image.url }}" alt="Zdjęcie">
                 <p>{{ photo.description }}</p>
-                <a href="{% url 'edit_photo' photo.id %}">Edytuj</a> |
+                <a href="{% url 'edit_photo' photo.id %}">Edytuj</a>
                 <a href="{% url 'delete_photo' photo.id %}">Usuń</a>
             </div>
         {% endfor %}
@@ -55,8 +59,8 @@
     </form>
 
     <h2>Eksportuj album:</h2>
-    <a href="{% url 'export_album_pdf' album.id %}" class="btn">Eksportuj do PDF</a> |
-    <a href="{% url 'export_album_docx' album.id %}" class="btn">Eksportuj do DOCX</a> |
+    <a href="{% url 'export_album_pdf' album.id %}" class="btn">Eksportuj do PDF</a><br>
+    <a href="{% url 'export_album_docx' album.id %}" class="btn">Eksportuj do DOCX</a><br>
     <a href="{% url 'export_album_html' album.id %}" class="btn">Eksportuj do HTML</a>
 
     <script>
@@ -65,13 +69,13 @@
         const captureBtn = document.getElementById('capture-btn');
         const capturedImageInput = document.getElementById('captured-image');
 
-        // Pobieranie dostępu do kamery
+
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(function(stream) {
                 video.srcObject = stream;
             });
 
-        // Robienie zdjęcia
+
         captureBtn.addEventListener('click', function() {
             const context = canvas.getContext('2d');
             canvas.width = video.videoWidth;
