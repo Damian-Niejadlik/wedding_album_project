@@ -1,7 +1,5 @@
 import os
-
 from django.shortcuts import render, redirect, get_object_or_404
-
 from wedding_album_project import settings
 from .models import Album, Photo
 from .forms import AlbumForm, PhotoForm
@@ -14,7 +12,6 @@ from reportlab.lib.pagesizes import letter
 import io
 from docx.shared import Inches
 from django.template.loader import render_to_string
-
 
 
 def album_list(request):
@@ -62,44 +59,14 @@ def delete_album(request, album_id):
     return redirect('album_list')
 
 
-# def edit_photo(request, photo_id):
-#     photo = get_object_or_404(Photo, id=photo_id)
-#     if request.method == 'POST':
-#         form = PhotoForm(request.POST, request.FILES, instance=photo)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('album_detail', album_id=photo.album.id)
-#     else:
-#         form = PhotoForm(instance=photo)
-#     return render(request, 'edit_photo.html', {'form': form})
-
-
-# def edit_photo(request, photo_id):
-#     photo = get_object_or_404(Photo, id=photo_id)
-#
-#     if request.method == 'POST':
-#         form = PhotoForm(request.POST, request.FILES, instance=photo)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('album_detail', album_id=photo.album.id)
-#     else:
-#         form = PhotoForm(instance=photo)
-#
-#     stickers = os.listdir(os.path.join(settings.MEDIA_ROOT, 'stickers'))
-#
-#     return render(request, 'edit_photo.html', {'form': form, 'photo': photo, 'stickers': stickers})
-
-
-
 def edit_photo(request, photo_id):
     photo = get_object_or_404(Photo, id=photo_id)
 
-    # Pobieranie wszystkich plików PNG z folderu stickers
     stickers_path = os.path.join(settings.MEDIA_ROOT, 'stickers')
-    stickers = [{'image': os.path.join(stickers_path, file)} for file in os.listdir(stickers_path) if file.endswith('.png')]
+    stickers = [{'image': os.path.join(settings.MEDIA_URL, 'stickers', file)} for file in os.listdir(stickers_path) if
+                file.endswith('.png')]
 
     return render(request, 'edit_photo.html', {'photo': photo, 'stickers': stickers})
-
 
 
 def delete_photo(request, photo_id):
@@ -117,7 +84,7 @@ def export_album_pdf(request, album_id):
 
     y = 700
     for photo in album.photos.all():
-        if y < 50:  # Nowa strona jeśli brakuje miejsca
+        if y < 50:
             pdf_canvas.showPage()
             y = 700
         image_path = photo.image.path
@@ -129,7 +96,6 @@ def export_album_pdf(request, album_id):
     return HttpResponse(buffer, content_type='application/pdf')
 
 
-# Eksport albumu do DOCX
 def export_album_docx(request, album_id):
     album = get_object_or_404(Album, id=album_id)
 
@@ -147,21 +113,10 @@ def export_album_docx(request, album_id):
     return response
 
 
-# def export_album_html(request, album_id):
-#     album = get_object_or_404(Album, id=album_id)
-#     photos = album.photos.all()
-#
-#     html_content = render_to_string('export_album.html', {'album': album, 'photos': photos})
-#
-#     response = HttpResponse(html_content, content_type='text/html')
-#     response['Content-Disposition'] = f'attachment; filename={album.title}.html'
-#     return response
-
 def export_album_html(request, album_id):
     album = get_object_or_404(Album, id=album_id)
     photos = album.photos.all()
 
-    # Generowanie HTML przy użyciu szablonu
     html_content = render_to_string('album_export.html', {'album': album, 'photos': photos})
 
     response = HttpResponse(content_type='text/html')
@@ -187,19 +142,16 @@ def add_photo(request, album_id):
     return render(request, 'add_photo.html', {'form': form, 'album': album})
 
 
-
 def capture_photo(request, album_id):
     album = get_object_or_404(Album, id=album_id)
 
     if request.method == 'POST':
         captured_image_data = request.POST.get('captured_image')
         if captured_image_data:
-            # Dekodowanie obrazu z formatu base64
             format, imgstr = captured_image_data.split(';base64,')
             ext = format.split('/')[-1]
             image_data = ContentFile(base64.b64decode(imgstr), name=f'captured_photo.{ext}')
 
-            # Zapisz zdjęcie w albumie
             Photo.objects.create(album=album, image=image_data)
             return redirect('album_detail', album_id=album_id)
 
@@ -211,11 +163,9 @@ def save_edited_photo(request, photo_id):
         photo = get_object_or_404(Photo, id=photo_id)
         edited_photo_data = request.POST.get('edited_photo_data')
 
-        # Usunięcie nagłówka "data:image/png;base64,"
         format, imgstr = edited_photo_data.split(';base64,')
         ext = format.split('/')[-1]
         data = ContentFile(base64.b64decode(imgstr), name=f'{photo_id}-edited.{ext}')
 
-        # Zapis nowego zdjęcia
         photo.image.save(data.name, data)
         return redirect('album_detail', album_id=photo.album.id)
