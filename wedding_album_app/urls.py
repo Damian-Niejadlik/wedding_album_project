@@ -3,6 +3,8 @@ from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 
+from .api_views import AlbumListCreateAPIView, AlbumDetailAPIView, PhotoListCreateAPIView, PhotoDetailAPIView
+
 
 urlpatterns = [
     path('', views.album_list, name='album_list'),
@@ -19,3 +21,11 @@ urlpatterns = [
     path('album/<int:album_id>/export/html/', views.export_album_html, name='export_album_html'),
     path('photo/<int:photo_id>/edit/save/', views.save_edited_photo, name='save_edited_photo'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+urlpatterns += [
+    path('api/albums/', AlbumListCreateAPIView.as_view(), name='api_album_list_create'),
+    path('api/albums/<int:pk>/', AlbumDetailAPIView.as_view(), name='api_album_detail'),
+    path('api/photos/', PhotoListCreateAPIView.as_view(), name='api_photo_list_create'),
+    path('api/photos/<int:pk>/', PhotoDetailAPIView.as_view(), name='api_photo_detail'),
+]
