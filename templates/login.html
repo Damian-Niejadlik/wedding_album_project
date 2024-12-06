@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logowanie</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <div class="login-container">
+        <form method="post" action="{% url 'login' %}" class="login-form">
+            {% csrf_token %}
+            <h1>Logowanie</h1>
+            {{ form.as_p }}
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <p class="message {{ message.tags }}">{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <button type="submit">Zaloguj się</button>
+        </form>
+    </div>
+</body>
+</html>
