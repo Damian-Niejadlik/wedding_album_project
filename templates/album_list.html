@@ -6,16 +6,24 @@
     <title>Lista Albumów</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <style>
+        .logout {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+    </style>
 </head>
 <body>
+    <a href="{% url 'logout' %}" class="logout">Wyloguj</a>
     <div class="container">
         <h1>Lista Albumów</h1>
 
         <ul>
             {% for album in albums %}
                 <li>
-                    <a href="{% url 'album_detail' album.id %}">{{ album.title }}</a>
-                    <form method="post" action="{% url 'delete_album' album.id %}" style="display:inline;">
+                    <a href="{% url 'album_detail' username=username album_id=album.id %}">{{ album.title }}</a>
+                    <form method="post" action="{% url 'delete_album' username=profile.username album_id=album.id %}" style="display:inline;">
                         {% csrf_token %}
                         <button type="submit">Usuń</button>
                     </form>
@@ -25,7 +33,7 @@
             {% endfor %}
         </ul>
 
-        <a href="{% url 'create_album' %}">Utwórz nowy album</a>
+        <a href="{% url 'create_album' request.user.username %}">Utwórz nowy album</a>
     </div>
 </body>
 </html>
