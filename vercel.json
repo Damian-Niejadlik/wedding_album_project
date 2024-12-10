@@ -22,8 +22,5 @@
       "src": "/(.*)",
       "dest": "wedding_album_project/wsgi.py"
     }
-  ],
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
   ]
 }
