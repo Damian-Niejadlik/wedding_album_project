@@ -11,5 +11,8 @@
       "src": "/(.*)",
       "dest": "wedding_album_project/elevate/wsgi.py"
     }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
   ]
 }
