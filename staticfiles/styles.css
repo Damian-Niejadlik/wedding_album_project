@@ -1,0 +1,121 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    background-color: #c0c0c0;
+}
+
+
+.container, form, .canvas-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+h1, h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+
+.photo-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 20px;
+}
+
+.photo-item {
+    flex: 1 1 250px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.photo-item img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px 0;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+
+#video, #canvas {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+canvas {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+
+#add-photo-container, #capture-photo-container {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+
+.active {
+    display: flex;
+}
+
+
+.sticker-btn {
+    margin: 5px;
+}
+
+
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    button {
+        padding: 8px 16px;
+    }
+
+    .text-input {
+        width: 80%;
+        margin-bottom: 10px;
+    }
+}
