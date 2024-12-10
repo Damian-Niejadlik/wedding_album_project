@@ -9,7 +9,7 @@ SECRET_KEY = 'django-insecure-7g)gwvm@16^ufqvlpo!m_$o7nvxyjuf+f9x8x(7v5l5_2nsa4$
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app', 'wedding_album_project.vercel.app', '127.0.0.1']
+ALLOWED_HOSTS = ['.vercel.app', 'wedding_album_project.vercel.app', '127.0.0.1', '.now.sh', 'localhost']
 
 
 INSTALLED_APPS = [
